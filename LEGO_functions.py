@@ -12,7 +12,7 @@ def image_to_df(image):
     width, height = image.size
 
     # Create df with RGB information
-    df = pd.DataFrame(np.vstack(np.array(image)), columns=('R', 'G', 'B'))
+    df = pd.DataFrame(np.vstack(np.array(image)[:,:,:3]), columns=('R', 'G', 'B'))
 
     # Associate the height and width for each pixel. 
     df['height'] = np.repeat(np.arange(height), width)
