@@ -124,7 +124,7 @@ def legoize_larger_bricks(lego_df):
 
             for index, row in groups.iterrows():
                 ax.add_patch(patches.Rectangle((wgroup*row.width-0.5, hgroup*row.height-0.5), 
-                                            wgroup, hgroup, fill=False, lw=2, color='black'))
+                                            wgroup, hgroup, fill=False, lw=3, color='black'))
 
     # Draw lego circles           
     for i in range(height):
