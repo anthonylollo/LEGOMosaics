@@ -25,7 +25,7 @@ def image_to_lego_colors(image_file, n_w=48, n_h=48):
 
     return lego_image
 
-def image_to_lego_bricks(image_file, n_w=48, n_h=48, plot_size=(10,10)):
+def image_to_lego_bricks(image_file, n_w=48, n_h=48):
     """ Convert a .jpg image into a bricked image. 
 
     Args:
@@ -47,7 +47,7 @@ def image_to_lego_bricks(image_file, n_w=48, n_h=48, plot_size=(10,10)):
     lego.legoize(lego_image)
 
 
-def image_to_large_lego_bricks(image_file, n_w=48, n_h=48, plot_size=(10,10)):
+def image_to_large_lego_bricks(image_file, n_w=48):
     """ Convert a .jpg image into a bricked image, with the ability to use 
     larger bricks.
 
@@ -63,7 +63,8 @@ def image_to_large_lego_bricks(image_file, n_w=48, n_h=48, plot_size=(10,10)):
     color_df = pd.read_csv('Colors/Lego_colors.csv')
 
     image = Image.open(image_file)
-    pix = lego.pixelate(image, n_w, n_h)
+    width, height = image.size
+    pix = lego.pixelate(image, n_w, int(n_w*height/width))
     lego_df = lego.image_to_df(pix)
     lego_df = lego.add_lego_colors(lego_df, color_df)
     lego.legoize_larger_bricks(lego_df)

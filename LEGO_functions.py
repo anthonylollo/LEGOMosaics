@@ -98,8 +98,9 @@ def legoize_larger_bricks(lego_df):
     """
     # Create the image for matplotlib
     image = df_to_image(lego_df, rgb_cols=['R_lego', 'G_lego', 'B_lego'])
+    height, width = image.size
 
-    fig, ax = plt.subplots(figsize=(30,30))
+    fig, ax = plt.subplots(figsize=(30,30*height/width))
     _ = plt.imshow(image)
     height, width = image.size
 
@@ -124,7 +125,7 @@ def legoize_larger_bricks(lego_df):
 
             for index, row in groups.iterrows():
                 ax.add_patch(patches.Rectangle((wgroup*row.width-0.5, hgroup*row.height-0.5), 
-                                            wgroup, hgroup, fill=False, lw=3, color='black'))
+                                            wgroup, hgroup, fill=False, lw=2, color='black'))
 
     # Draw lego circles           
     for i in range(height):
