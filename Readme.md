@@ -5,13 +5,13 @@ This is an implementation of [**Ryan Timpe's LEGOMosaics**](https://github.com/r
 
 ![](For_Readme/Bobcat_orig.jpg)
 
-    Lego_run.image_to_lego_colors('Images/bobcatbrick.jpg')
+    LEGO_run.image_to_lego_colors('Images/bobcatbrick.jpg')
 ![](For_Readme/Bobcat_lego.png)
 
-    Lego_run.image_to_lego_bricks('Images/bobcatbrick.jpg')
+    LEGO_run.image_to_lego_bricks('Images/bobcatbrick.jpg')
 ![](For_Readme/Bobcat_bricks.png)
 
-    Lego_run.image_to_large_lego_bricks('Images/bobcatbrick.jpg')
+    LEGO_run.image_to_large_lego_bricks('Images/bobcatbrick.jpg')
 ![](For_Readme/Bobcat_bricks_grouped.png)
 
 ## In development
