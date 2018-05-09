@@ -106,26 +106,32 @@ def legoize_larger_bricks(lego_df):
 
     lego_df['group'] = np.NaN
 
-    brick_list = [(2,4), (4,2), (2,2), (1,1)]
+    brick_list = [(2,4), (4,2), (2,2), (4,1), (1,4), (2,1), (1,2), (1,1)]
     for hgroup, wgroup in brick_list:
-        remain= lego_df.group.isnull()
-        if sum(remain) != 0:
-            groups = (lego_df[remain]
-                      .groupby([lego_df[remain].height//hgroup, lego_df[remain].width//wgroup])
-                      .color.apply(lambda x: max(x.value_counts())).reset_index())
-            groups = groups[groups.color == (hgroup*wgroup)]
+        for i in range(hgroup):
+            for j in range(wgroup):
+                remain= lego_df.group.isnull()
+                if sum(remain) != 0:
+                    groups = (lego_df[remain]
+                              .groupby([(lego_df[remain].height+i)//hgroup, 
+                                        (lego_df[remain].width+j)//wgroup])
+                              .color.apply(lambda x: max(x.value_counts())).reset_index())
+                    groups = groups[groups.color == (hgroup*wgroup)]
 
-            df_groups = (lego_df[remain]
-                         .groupby([lego_df[remain].height//hgroup, lego_df[remain].width//wgroup])
-                         .color.transform(lambda x: max(x.value_counts())))
+                    df_groups = (lego_df[remain]
+                                 .groupby([(lego_df[remain].height+i)//hgroup, 
+                                           (lego_df[remain].width+j)//wgroup])
+                                 .color.transform(lambda x: max(x.value_counts())))
 
-            lego_df.loc[lego_df.index.isin(
-                df_groups[df_groups == (hgroup*wgroup)].index), 'group'] = (str(wgroup) 
-                                                                            + 'x' + str(hgroup))
+                    lego_df.loc[lego_df.index.isin(
+                        df_groups[df_groups == (hgroup*wgroup)].index), 
+                            'group'] = (str(wgroup) + 'x' + str(hgroup))
 
-            for index, row in groups.iterrows():
-                ax.add_patch(patches.Rectangle((wgroup*row.width-0.5, hgroup*row.height-0.5), 
-                                            wgroup, hgroup, fill=False, lw=2, color='black'))
+                    for index, row in groups.iterrows():
+                        ax.add_patch(patches.Rectangle(
+                            (wgroup*row.width-0.5-j, hgroup*row.height-0.5-i), 
+                            wgroup, hgroup, fill=False, lw=2, color='black'))
+
 
     # Draw lego circles           
     for i in range(height):
