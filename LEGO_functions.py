@@ -66,30 +66,6 @@ def add_lego_colors(df, color_df):
     df.drop(columns=['cvar', 'cvar_min'], inplace=True)
     return df
 
-def legoize(image):
-    """ Add 1x1 bricks to the image using matplotlib
-
-    """
-    fig, ax = plt.subplots(figsize=(30,30))
-    _ = plt.imshow(image)
-    height, width = image.size
-
-    # Plot the edges
-    for i in range(height):
-        plt.axhline(i-0.5, 0, 1, color='black', lw=1)
-    for i in range(width):
-        plt.axvline(i-0.5, 0, 1, color='black', lw=1)
-
-    # Draw circles
-    for i in range(height):
-        for j in range(width):
-            circle1 = plt.Circle((i, j), 0.3, color='black', alpha=0.15)
-            _ = ax.add_artist(circle1)
-            
-    _ = plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
-    _ = plt.tick_params(axis='y', which='both', left=False, right=False, labelleft=False)
-    plt.show()
-
 
 def legoize_larger_bricks(lego_df):
     """ Create a lego brick image, using larger bricks. Requires the image df to be passed, 
@@ -131,7 +107,6 @@ def legoize_larger_bricks(lego_df):
                         ax.add_patch(patches.Rectangle(
                             (wgroup*row.width-0.5-j, hgroup*row.height-0.5-i), 
                             wgroup, hgroup, fill=False, lw=2, color='black'))
-
 
     # Draw lego circles           
     for i in range(height):
