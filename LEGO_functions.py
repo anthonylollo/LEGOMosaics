@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from PIL import Image
+import re
 
 def image_to_df(image):
     """ Read in an image and convert it to a dataframe 5 columns; pixel location
@@ -12,7 +13,11 @@ def image_to_df(image):
     width, height = image.size
 
     # Create df with RGB information
-    df = pd.DataFrame(np.vstack(np.array(image)[:,:,:3]), columns=('R', 'G', 'B'))
+    if image.format == 'PNG':
+        df = pd.DataFrame(np.vstack(np.array(image)[:,:,:4]), columns=('R', 'G', 'B', 'A'))
+    else:
+        df = pd.DataFrame(np.vstack(np.array(image)[:,:,:3]), columns=('R', 'G', 'B'))
+
 
     # Associate the height and width for each pixel. 
     df['height'] = np.repeat(np.arange(height), width)
@@ -88,12 +93,20 @@ def legoize_larger_bricks(lego_df):
             for j in range(wgroup):
                 remain= lego_df.group.isnull()
                 if sum(remain) != 0:
+
+                    # For plotting
                     groups = (lego_df[remain]
                               .groupby([(lego_df[remain].height+i)//hgroup, 
                                         (lego_df[remain].width+j)//wgroup])
                               .color.apply(lambda x: max(x.value_counts())).reset_index())
                     groups = groups[groups.color == (hgroup*wgroup)]
 
+                    for index, row in groups.iterrows():
+                        ax.add_patch(patches.Rectangle(
+                            (wgroup*row.width-0.5-j, hgroup*row.height-0.5-i), 
+                            wgroup, hgroup, fill=False, lw=2, color='black'))
+
+                    # For removing from subsequent searches. 
                     df_groups = (lego_df[remain]
                                  .groupby([(lego_df[remain].height+i)//hgroup, 
                                            (lego_df[remain].width+j)//wgroup])
@@ -102,11 +115,6 @@ def legoize_larger_bricks(lego_df):
                     lego_df.loc[lego_df.index.isin(
                         df_groups[df_groups == (hgroup*wgroup)].index), 
                             'group'] = (str(wgroup) + 'x' + str(hgroup))
-
-                    for index, row in groups.iterrows():
-                        ax.add_patch(patches.Rectangle(
-                            (wgroup*row.width-0.5-j, hgroup*row.height-0.5-i), 
-                            wgroup, hgroup, fill=False, lw=2, color='black'))
 
     # Draw lego circles           
     for i in range(height):
