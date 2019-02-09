@@ -5,19 +5,22 @@ import matplotlib.patches as patches
 from PIL import Image
 import re
 
-def image_to_df(image):
-    """ Read in an image and convert it to a dataframe 5 columns; pixel location
-    and 3 color channels. Work with .jpg
+def jpg_to_df(image):
+    """
+    Convert .jpg PIL image into a DataFrame.
+ 
+    Parameters
+    ----------
+    image : PIL.JpegImagePlugin.JpegImageFile
+        Image to convert. 
 
+    Return
+    ------
+    pandas.DataFrame
+        Contains 5 columns pixel location x, y and 3 color channels.
     """
     width, height = image.size
-
-    # Create df with RGB information
-    if image.format == 'PNG':
-        df = pd.DataFrame(np.vstack(np.array(image)[:,:,:4]), columns=('R', 'G', 'B', 'A'))
-    else:
-        df = pd.DataFrame(np.vstack(np.array(image)[:,:,:3]), columns=('R', 'G', 'B'))
-
+    df = pd.DataFrame(np.vstack(np.array(image)[:,:,:3]), columns=('R', 'G', 'B'))
 
     # Associate the height and width for each pixel. 
     df['height'] = np.repeat(np.arange(height), width)
@@ -26,9 +29,19 @@ def image_to_df(image):
 
 
 def df_to_image(df, rgb_cols):
-    """ Convers a dataframe with pixel location (height and width) and RGB
-    information to an image
+    """
+    Convert a dataframe with pixel location (height and width) and RGB information to an image.
 
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        DataFrame to convert.
+    rgb_cols : list of str
+        Column names of the three RGB columns
+
+    Return
+    ------
+    PIL.Image.Image
     """
     # Ensure colors are uint8 
     df[rgb_cols] = df[rgb_cols].astype(np.uint8)
@@ -37,14 +50,47 @@ def df_to_image(df, rgb_cols):
 
 
 def pixelate(image, n_w, n_h):
-    """ Pixelates a larger image by rescaling it to a smaller image
+    """
+    Pixelate a larger image by rescaling it to a smaller image.
 
+    Parameters
+    ----------
+    image : PIL.JpegImagePlugin.JpegImageFile
+        Image to pixelate.
+    n_w : int
+        Resulting image width.
+    n_h : int
+        Resulting image height.
+
+    Return
+    ------
+    PIL.JpegImagePlugin.JpegImageFile
+        Pixelated image. 
     """
     image = image.resize((n_w, n_h), Image.ANTIALIAS)
     return image
 
 
 def add_lego_colors(df, color_df):
+    """
+    Add lego color columns to DataFrame. 
+
+    There are other ways to do this, but the colors are added based on the closest in Euclidean
+    distance. Does not include Transparent, Metallic or Glow bricks and only uses the 2016 brick 
+    palette. 
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        DataFrame with ['R', 'G', 'B'] columns to find the closest matching lego_color
+    color_df : pandas.DataFrame
+        DataFrame containing all lego colors.
+
+    Return
+    ------
+    pd.DataFrame
+        Contains 3 columns R_lego, G_lego, B_lego for the corrsponding lego brick. 
+    """
     # Can't use uint8 for variance, numbers become too large. 
     df[['R', 'G', 'B']] = df[['R', 'G', 'B']].astype('int')
 
@@ -73,15 +119,19 @@ def add_lego_colors(df, color_df):
 
 
 def legoize_larger_bricks(lego_df):
-    """ Create a lego brick image, using larger bricks. Requires the image df to be passed, 
-    instead of the image itself. Definitely need to improve this code, but it works for now
+    """
+    Create a lego brick image, using larger bricks. 
 
+    Parameters
+    ----------
+    lego_df : pandas.DataFrame
+        DataFrame containing lego brick color columns ['R_lego', 'G_lego', 'B_lego']
     """
     # Create the image for matplotlib
     image = df_to_image(lego_df, rgb_cols=['R_lego', 'G_lego', 'B_lego'])
     height, width = image.size
 
-    fig, ax = plt.subplots(figsize=(30,30*height/width))
+    fig, ax = plt.subplots(figsize=(10,10*height/width))
     _ = plt.imshow(image)
     height, width = image.size
 
