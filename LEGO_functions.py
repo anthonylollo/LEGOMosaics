@@ -154,7 +154,7 @@ def legoize_larger_bricks(lego_df):
                     for index, row in groups.iterrows():
                         ax.add_patch(patches.Rectangle(
                             (wgroup*row.width-0.5-j, hgroup*row.height-0.5-i), 
-                            wgroup, hgroup, fill=False, lw=2, color='black'))
+                            wgroup, hgroup, fill=False, lw=0.7, color='black'))
 
                     # For removing from subsequent searches. 
                     df_groups = (lego_df[remain]
